@@ -362,7 +362,7 @@ export default function PerlerStudio() {
                     <button
                       key={u.index}
                       type="button"
-                      title={c.hex}
+                      title={`${c.code} · ${c.hex}`}
                       onClick={() =>
                         setHighlight(active ? null : u.index)
                       }
