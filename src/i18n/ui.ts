@@ -5,10 +5,10 @@ const en = {
   // page shell
   title: "Perler Studio — Bead Pattern Maker",
   metaDesc:
-    "Turn any image into a fuse-bead pattern with bead-accurate Perler and MARD 221 palettes, pegboard grids and a bead shopping list.",
+    "Turn any image into a fuse-bead pattern with 7 bead-accurate color systems (Perler, MARD, COCO, Hama, Artkal), pegboard grids and a bead shopping list.",
   subtitle: "Turn any image into a fuse-bead pattern",
   footer:
-    "Everything runs in your browser — images never leave your device. Choose between the complete current Perler® catalog (103 colors) and the complete MARD 221 chart (series A–M). Standard pegboards are 29×29 pegs; midi beads are ~5 mm.",
+    "Everything runs in your browser — images never leave your device. 7 complete color systems: Perler (103), MARD 221 & 291, COCO 291, Hama, Artkal S and Artkal Mini — 1,392 colors in total. Standard pegboards are 29×29 pegs; midi beads are 5 mm, mini beads 2.6 mm.",
   switchLabel: "中文",
   switchHref: "/zh/",
   switchLang: "zh",
@@ -49,10 +49,10 @@ export type Dict = typeof en;
 const zh: Dict = {
   title: "Perler Studio — 拼豆图纸生成器",
   metaDesc:
-    "把任意图片变成拼豆图纸：支持 Perler 103 色与 MARD 221 色卡精准配色，含拼板网格和配豆清单，全部在浏览器本地完成。",
+    "把任意图片变成拼豆图纸：支持 Perler、MARD 221/291、COCO 291、Hama、Artkal 共 7 套色卡精准配色，含拼板网格和配豆清单，全部在浏览器本地完成。",
   subtitle: "把任意图片变成拼豆图纸",
   footer:
-    "所有处理都在你的浏览器中完成——图片不会上传。可选完整 Perler® 现行色卡（103 色）或完整 MARD 221 色卡（A–M 系列）。标准拼板为 29×29 孔，中豆直径约 5 毫米。",
+    "所有处理都在你的浏览器中完成——图片不会上传。支持 7 套完整色卡：Perler（103 色）、MARD 221 与 291、COCO 291、Hama、Artkal 中豆与 Artkal Mini，共 1,392 色。标准拼板为 29×29 孔；中豆直径 5 毫米，小豆 2.6 毫米。",
   switchLabel: "English",
   switchHref: "/",
   switchLang: "en",

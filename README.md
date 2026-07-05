@@ -8,7 +8,7 @@ Turn any image into a **Perler (fuse) bead pattern** — entirely in your browse
 
 - 🖼️ **Upload or drag & drop** any image (a built-in sample is included)
 - 🎯 **Perceptually accurate colors** — every pixel is matched using CIEDE2000 distance in CIE-Lab space
-- 🏷️ **Two bead brands** — the complete current Perler catalog (103 colors, official product codes) or the complete MARD 221 chart (series A–M), switchable per pattern
+- 🏷️ **Seven bead color systems** — Perler, MARD 221 & 291, COCO 291, Hama, Artkal S and Artkal Mini (1,392 colors in total), switchable per pattern
 - 🧮 **Floyd–Steinberg dithering** (toggleable) for smoother photo gradients
 - 📏 **Pegboard-aware grid** — guides every 10 pegs plus 29×29 board boundaries, so you know exactly how many standard pegboards you need
 - 🛒 **Bead shopping list** — per-color counts, sorted by quantity; click a color to highlight where it goes on the board
@@ -19,17 +19,19 @@ Turn any image into a **Perler (fuse) bead pattern** — entirely in your browse
 
 ## 🎨 The palettes
 
-### Perler (103 colors)
+| System | Colors | Bead size | Codes look like | Source |
+| :-- | --: | :-- | :-- | :-- |
+| **Perler** | 103 | 5 mm midi | `80-15211` + name | [beadcolors](https://github.com/maxcleme/beadcolors) (measured) |
+| **MARD 221** | 221 | 5 mm midi | `A1`, `F15` | [bitbead.app](https://www.bitbead.app/en/colors/mard) |
+| **MARD 291** | 291 | 2.6 mm mini | `A1` … `ZG8` | [bitbead.app](https://www.bitbead.app/en/colors/mard-291) |
+| **COCO 291** | 291 | 2.6 mm mini | `E02`, `K39` | [bitbead.app](https://www.bitbead.app/en/colors/coco) |
+| **Hama** | 89 | 5 mm midi | `H01` + name | [bitbead.app](https://www.bitbead.app/en/colors/hama) |
+| **Artkal S** | 176 | 5 mm midi | `S01` + name | [bitbead.app](https://www.bitbead.app/en/colors/artkal) |
+| **Artkal Mini** | 221 | 2.6 mm mini | `MA1` + 中文/EN name | [bitbead.app](https://www.bitbead.app/en/colors/artkal-mini) |
 
-[Perler](https://perler.com) is the classic American fuse-bead brand — 5 mm "midi" beads that you arrange on a pegboard and fuse with an iron. The app ships the **complete current catalog: 103 colors**, each with its official product code (e.g. `80-15211 Tomato`) and RGB values measured from physical beads by the [beadcolors](https://github.com/maxcleme/beadcolors) community project.
+**Perler** is the classic American fuse-bead brand; the app ships its complete current catalog with official product codes and RGB values measured from physical beads. **MARD** and **COCO** are popular Chinese systems organized as lettered series — the 221 chart covers 5 mm midi beads, while the 291-color charts target 2.6 mm minis for high-detail work. **Hama** is the classic Danish brand, and **Artkal** is the Chinese brand best known in the pixel-art community, in both midi (S) and mini lines.
 
-### MARD 221 (221 colors)
-
-MARD (米魔/漫德) is a popular Chinese fuse-bead brand whose color system is organized as lettered series — **221 colors across series A–M** (A×26, B×32, C×29, D×26, E×24, F×25, G×21, H×23, M×15). MARD colors are identified by code only (`A1`, `F15`, …) rather than names. The chart comes from [bitbead.app](https://www.bitbead.app/en/colors/mard). The much larger palette gives noticeably smoother gradients on photos.
-
-### Other color systems
-
-Plenty of other bead-color systems exist and could be added the same way: **Hama** (Danish, 92 midi colors), **Artkal** (A/C/M 2.6 mm mini and R/S 5 mm midi series, up to ~199 colors), **Nabbi** (30), **COCO 291** (Chinese mini-bead system), **Yant** (119), and MARD's own 291-color mini line. Adding one is a small change to `scripts/gen-palette.mjs` plus a new entry in the `BRANDS` map — PRs welcome.
+The physical-size estimate and pegboard math adapt to each system's bead size automatically. A few smaller systems (Nabbi 30, Yant 119) aren't included yet — adding one is a small change to `scripts/gen-palette.mjs` plus a new entry in the `BRANDS` map. PRs welcome.
 
 ## 🧱 Tech stack
 

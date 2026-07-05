@@ -357,11 +357,13 @@ export default function PerlerStudio({
                   <Badge variant="secondary">
                     {t.colorsUsed(pattern.used.length)}
                   </Badge>
-                  <Badge variant="secondary">{t.pegboards(boards)}</Badge>
+                  {BRANDS[pattern.brand].pitchMm === 5 && (
+                    <Badge variant="secondary">{t.pegboards(boards)}</Badge>
+                  )}
                   <Badge variant="secondary">
                     {t.sizeCm(
-                      (pattern.width * 0.5).toFixed(1),
-                      (pattern.height * 0.5).toFixed(1)
+                      ((pattern.width * BRANDS[pattern.brand].pitchMm) / 10).toFixed(1),
+                      ((pattern.height * BRANDS[pattern.brand].pitchMm) / 10).toFixed(1)
                     )}
                   </Badge>
                 </div>
