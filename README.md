@@ -2,6 +2,8 @@
 
 Turn any image into a **Perler (fuse) bead pattern** — entirely in your browser. Upload a picture, tune the size, and get a pegboard-ready chart with a bead shopping list.
 
+🔗 **Live: [perler.gujiakai.top](https://perler.gujiakai.top/)** · [English](https://perler.gujiakai.top/) / [中文](https://perler.gujiakai.top/zh/)
+
 **Everything runs client-side. Your images never leave your device.**
 
 ## ✨ Features
@@ -67,6 +69,12 @@ Static output — deploys to any static host (Cloudflare Pages, Netlify, Vercel�
 - **Build command:** `npm run build`
 - **Output directory:** `dist`
 - **Node version:** 22+
+
+## 🙏 Acknowledgements
+
+- Vibe-coded with [Claude Code](https://claude.com/claude-code), powered by Anthropic's **Claude Fable 5** — scaffolding, color science, rendering, i18n and all seven palette integrations
+- Bead color data: the [beadcolors](https://github.com/maxcleme/beadcolors) community dataset and the [bitbead.app](https://www.bitbead.app/en/colors) color charts
+- Built on [Astro](https://astro.build), [React](https://react.dev), [Tailwind CSS](https://tailwindcss.com) and [shadcn/ui](https://ui.shadcn.com)
 
 ## 📝 Notes
 
