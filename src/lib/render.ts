@@ -1,4 +1,4 @@
-import { PERLER_COLORS } from "./palette";
+import { BRANDS, type BrandId } from "./palette";
 import { shadeHex } from "./color";
 import type { Pattern } from "./pattern";
 
@@ -6,7 +6,16 @@ const BOARD_BG = "#FAFAF8";
 const PEG_DOT = "rgba(0,0,0,0.06)";
 const PEGBOARD = 29; // beads per side of a standard square pegboard
 
-const holeShade = PERLER_COLORS.map((c) => shadeHex(c.hex, 0.68));
+const holeShades = new Map<BrandId, string[]>();
+
+function holeShade(brand: BrandId): string[] {
+  let s = holeShades.get(brand);
+  if (!s) {
+    s = BRANDS[brand].colors.map((c) => shadeHex(c.hex, 0.68));
+    holeShades.set(brand, s);
+  }
+  return s;
+}
 
 export interface RenderOptions {
   cell: number;
@@ -21,6 +30,8 @@ export function renderPattern(
   opts: RenderOptions
 ): void {
   const { width, height, cells } = pattern;
+  const colors = BRANDS[pattern.brand].colors;
+  const shades = holeShade(pattern.brand);
   const { cell, grid, highlight = null } = opts;
   const W = width * cell;
   const H = height * cell;
@@ -75,12 +86,12 @@ export function renderPattern(
       }
       const faded = highlight !== null && pi !== highlight;
       ctx.globalAlpha = faded ? 0.12 : 1;
-      ctx.fillStyle = PERLER_COLORS[pi]!.hex;
+      ctx.fillStyle = colors[pi]!.hex;
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.fill();
       if (cell >= 7) {
-        ctx.fillStyle = holeShade[pi]!;
+        ctx.fillStyle = shades[pi]!;
         ctx.beginPath();
         ctx.arc(cx, cy, hole, 0, Math.PI * 2);
         ctx.fill();
@@ -92,6 +103,7 @@ export function renderPattern(
 
 /** Render pattern plus a bead-count legend into a fresh canvas for download. */
 export function renderExport(pattern: Pattern, cell = 24): HTMLCanvasElement {
+  const colors = BRANDS[pattern.brand].colors;
   const pad = 24;
   const cols = Math.max(1, Math.min(3, Math.ceil(pattern.used.length / 17)));
   const rowH = 30;
@@ -121,18 +133,14 @@ export function renderExport(pattern: Pattern, cell = 24): HTMLCanvasElement {
   pattern.used.forEach((u, i) => {
     const cx = pad + Math.floor(i / legendRows) * colW;
     const cy = top + (i % legendRows) * rowH;
-    ctx.fillStyle = PERLER_COLORS[u.index]!.hex;
+    ctx.fillStyle = colors[u.index]!.hex;
     ctx.beginPath();
     ctx.arc(cx + 10, cy, 9, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = "rgba(0,0,0,0.25)";
     ctx.stroke();
     ctx.fillStyle = "#111";
-    ctx.fillText(
-      `${PERLER_COLORS[u.index]!.name} × ${u.count}`,
-      cx + 28,
-      cy
-    );
+    ctx.fillText(`${colors[u.index]!.name} × ${u.count}`, cx + 28, cy);
   });
   return canvas;
 }

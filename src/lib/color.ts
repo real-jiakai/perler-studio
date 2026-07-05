@@ -1,4 +1,4 @@
-import { PERLER_COLORS } from "./palette";
+import { BRANDS, type BrandId } from "./palette";
 
 export type RGB = [number, number, number];
 export type Lab = [number, number, number];
@@ -92,33 +92,59 @@ export function ciede2000(l1: Lab, l2: Lab): number {
   );
 }
 
-const paletteLab: Lab[] = PERLER_COLORS.map((c) => {
-  const [r, g, b] = hexToRgb(c.hex);
-  return rgbToLab(r, g, b);
-});
+interface Matcher {
+  lab: Lab[];
+  rgb: RGB[];
+  cache: Map<number, number>;
+}
 
-export const paletteRgb: RGB[] = PERLER_COLORS.map((c) => hexToRgb(c.hex));
+const matchers = new Map<BrandId, Matcher>();
 
-const cache = new Map<number, number>();
+function getMatcher(brand: BrandId): Matcher {
+  let m = matchers.get(brand);
+  if (!m) {
+    const colors = BRANDS[brand].colors;
+    m = {
+      lab: colors.map((c) => {
+        const [r, g, b] = hexToRgb(c.hex);
+        return rgbToLab(r, g, b);
+      }),
+      rgb: colors.map((c) => hexToRgb(c.hex)),
+      cache: new Map(),
+    };
+    matchers.set(brand, m);
+  }
+  return m;
+}
 
-/** Index of the perceptually nearest Perler color for an RGB value. */
-export function nearestBead(r: number, g: number, b: number): number {
+export function paletteRgb(brand: BrandId): RGB[] {
+  return getMatcher(brand).rgb;
+}
+
+/** Index of the perceptually nearest bead color within a brand's palette. */
+export function nearestBead(
+  brand: BrandId,
+  r: number,
+  g: number,
+  b: number
+): number {
   r = Math.max(0, Math.min(255, Math.round(r)));
   g = Math.max(0, Math.min(255, Math.round(g)));
   b = Math.max(0, Math.min(255, Math.round(b)));
   const key = (r << 16) | (g << 8) | b;
-  const hit = cache.get(key);
+  const m = getMatcher(brand);
+  const hit = m.cache.get(key);
   if (hit !== undefined) return hit;
   const lab = rgbToLab(r, g, b);
   let best = 0;
   let bestD = Infinity;
-  for (let i = 0; i < paletteLab.length; i++) {
-    const d = ciede2000(lab, paletteLab[i]!);
+  for (let i = 0; i < m.lab.length; i++) {
+    const d = ciede2000(lab, m.lab[i]!);
     if (d < bestD) {
       bestD = d;
       best = i;
     }
   }
-  cache.set(key, best);
+  m.cache.set(key, best);
   return best;
 }

@@ -1,10 +1,11 @@
-import { PERLER_COLORS } from "./palette";
+import { BRANDS, type BrandId } from "./palette";
 import { nearestBead, paletteRgb } from "./color";
 
 export interface Pattern {
+  brand: BrandId;
   width: number;
   height: number;
-  /** Palette index per cell, -1 = empty (transparent in the source). */
+  /** Palette index per cell (into BRANDS[brand].colors), -1 = empty. */
   cells: Int16Array;
   /** Colors actually used, sorted by bead count descending. */
   used: { index: number; count: number }[];
@@ -13,10 +14,11 @@ export interface Pattern {
 
 export interface PatternOptions {
   dither: boolean;
+  brand: BrandId;
 }
 
 /**
- * Quantize a grid-sized ImageData to the Perler palette.
+ * Quantize a grid-sized ImageData to a brand's bead palette.
  * With dithering enabled, Floyd–Steinberg error diffusion runs over the
  * bead grid; error is never propagated into or out of empty cells.
  */
@@ -25,9 +27,11 @@ export function generatePattern(
   opts: PatternOptions
 ): Pattern {
   const { width, height, data } = img;
+  const { brand } = opts;
+  const rgb = paletteRgb(brand);
   const n = width * height;
   const cells = new Int16Array(n).fill(-1);
-  const counts = new Array<number>(PERLER_COLORS.length).fill(0);
+  const counts = new Array<number>(BRANDS[brand].colors.length).fill(0);
 
   // Float working copy so dither error accumulates without clipping.
   const buf = new Float32Array(n * 3);
@@ -49,11 +53,11 @@ export function generatePattern(
       const r = buf[i * 3]!;
       const g = buf[i * 3 + 1]!;
       const b = buf[i * 3 + 2]!;
-      const pi = nearestBead(r, g, b);
+      const pi = nearestBead(brand, r, g, b);
       cells[i] = pi;
       counts[pi]!++;
       if (!opts.dither) continue;
-      const [pr, pg, pb] = paletteRgb[pi]!;
+      const [pr, pg, pb] = rgb[pi]!;
       const er = r - pr;
       const eg = g - pg;
       const eb = b - pb;
@@ -78,6 +82,7 @@ export function generatePattern(
     .sort((a, b) => b.count - a.count);
 
   return {
+    brand,
     width,
     height,
     cells,

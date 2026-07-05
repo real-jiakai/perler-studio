@@ -1,11 +1,15 @@
-// Regenerates src/lib/palette.ts from the community-maintained beadcolors
-// dataset (github.com/maxcleme/beadcolors). Run: node scripts/gen-palette.mjs
+// Regenerates src/lib/palette.ts from public bead color datasets:
+//   - Perler: community-maintained beadcolors dataset (github.com/maxcleme/beadcolors)
+//   - MARD 221: bitbead.app color chart (www.bitbead.app/en/colors/mard)
+// Run: node scripts/gen-palette.mjs
 import { writeFileSync } from "node:fs";
 
-const BASE = "https://beadcolors.eremes.xyz/raw";
+// ---- Perler (beadcolors CSVs) ----
+
+const BEADCOLORS = "https://beadcolors.eremes.xyz/raw";
 
 async function fetchCsv(name) {
-  const res = await fetch(`${BASE}/${name}.csv`);
+  const res = await fetch(`${BEADCOLORS}/${name}.csv`);
   if (!res.ok) throw new Error(`${name}.csv: HTTP ${res.status}`);
   return (await res.text())
     .trim()
@@ -36,26 +40,54 @@ function family(name) {
 
 const norm = (n) => n.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-const midi = await fetchCsv("perler");
-const mini = await fetchCsv("perler_mini");
+async function perlerColors() {
+  const midi = await fetchCsv("perler");
+  const mini = await fetchCsv("perler_mini");
+  const byName = new Map();
+  for (const c of midi)
+    if (!byName.has(norm(c.name))) byName.set(norm(c.name), c);
+  for (const c of mini)
+    if (!byName.has(norm(c.name))) byName.set(norm(c.name), c);
 
-const byName = new Map();
-for (const c of midi) if (!byName.has(norm(c.name))) byName.set(norm(c.name), c);
-for (const c of mini) if (!byName.has(norm(c.name))) byName.set(norm(c.name), c);
+  const order = ["solid", "pearl", "translucent", "neon", "metallic", "glitter", "glow", "striped", "other"];
+  return [...byName.values()]
+    .map((c) => ({ code: c.code, name: c.name, hex: hex(c), family: family(c.name) }))
+    .sort(
+      (a, b) =>
+        order.indexOf(a.family) - order.indexOf(b.family) ||
+        a.name.localeCompare(b.name)
+    );
+}
 
-const order = ["solid", "pearl", "translucent", "neon", "metallic", "glitter", "glow", "striped", "other"];
-const all = [...byName.values()]
-  .map((c) => ({ code: c.code, name: c.name, hex: hex(c), family: family(c.name) }))
-  .sort(
-    (a, b) =>
-      order.indexOf(a.family) - order.indexOf(b.family) ||
-      a.name.localeCompare(b.name)
-  );
+// ---- MARD 221 (bitbead.app chart) ----
 
-const lines = all.map(
-  (c) =>
-    `  { code: "${c.code}", name: "${c.name.replace(/"/g, '\\"')}", hex: "${c.hex}", family: "${c.family}" },`
-);
+async function mardColors() {
+  const res = await fetch("https://www.bitbead.app/en/colors/mard");
+  if (!res.ok) throw new Error(`bitbead: HTTP ${res.status}`);
+  const html = await res.text();
+  const cardRe =
+    /class="truncate font-medium text-body">([^<]{1,40})<\/div><div class="font-mono text-body">(#[0-9A-Fa-f]{6})/g;
+  const out = [];
+  let m;
+  while ((m = cardRe.exec(html)))
+    out.push({ code: m[1], name: m[1], hex: m[2].toUpperCase(), family: "solid" });
+  if (out.length !== new Set(out.map((c) => c.code)).size)
+    throw new Error("duplicate MARD codes scraped");
+  // sort by series letter then numeric part: A1, A2, ... B1, ...
+  out.sort((a, b) => {
+    const [, as, an] = a.code.match(/^([A-Z]+)(\d+)$/) ?? [, a.code, 0];
+    const [, bs, bn] = b.code.match(/^([A-Z]+)(\d+)$/) ?? [, b.code, 0];
+    return as.localeCompare(bs) || +an - +bn;
+  });
+  return out;
+}
+
+// ---- emit palette.ts ----
+
+const entry = (c) =>
+  `  { code: "${c.code}", name: "${c.name.replace(/"/g, '\\"')}", hex: "${c.hex}", family: "${c.family}" },`;
+
+const [perler, mard] = await Promise.all([perlerColors(), mardColors()]);
 
 writeFileSync(
   new URL("../src/lib/palette.ts", import.meta.url),
@@ -71,19 +103,33 @@ writeFileSync(
   | "other";
 
 export interface BeadColor {
-  /** Official Perler product code. */
+  /** Brand color code (Perler product code / MARD series code). */
   code: string;
   name: string;
   hex: string;
   family: BeadFamily;
 }
 
-// Complete current Perler bead catalog. Measured RGB values from the
-// community-maintained beadcolors dataset (github.com/maxcleme/beadcolors),
-// midi palette merged with mini-only colors. Regenerate: scripts/gen-palette.
+// GENERATED FILE — do not edit by hand. Regenerate: node scripts/gen-palette.mjs
+//
+// Perler: complete current catalog, measured RGB from the community-maintained
+// beadcolors dataset (github.com/maxcleme/beadcolors).
+// MARD 221: complete A–M series chart from bitbead.app.
+
 export const PERLER_COLORS: BeadColor[] = [
-${lines.join("\n")}
+${perler.map(entry).join("\n")}
 ];
+
+export const MARD_COLORS: BeadColor[] = [
+${mard.map(entry).join("\n")}
+];
+
+export const BRANDS = {
+  perler: { label: "Perler", colors: PERLER_COLORS },
+  mard: { label: "MARD 221", colors: MARD_COLORS },
+} as const;
+
+export type BrandId = keyof typeof BRANDS;
 `
 );
-console.log(`palette.ts written: ${all.length} colors`);
+console.log(`palette.ts written: ${perler.length} Perler + ${mard.length} MARD`);

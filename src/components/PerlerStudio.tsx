@@ -9,10 +9,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { PERLER_COLORS } from "@/lib/palette";
+import { BRANDS, type BrandId } from "@/lib/palette";
 import { generatePattern, type Pattern } from "@/lib/pattern";
 import { renderExport, renderPattern } from "@/lib/render";
 
@@ -92,6 +99,7 @@ function makeSample(): Source {
 
 export default function PerlerStudio() {
   const [source, setSource] = useState<Source | null>(null);
+  const [brand, setBrand] = useState<BrandId>("perler");
   const [beadsAcross, setBeadsAcross] = useState(48);
   const [dither, setDither] = useState(true);
   const [grid, setGrid] = useState(true);
@@ -133,10 +141,10 @@ export default function PerlerStudio() {
       Math.min(MAX_BEADS, Math.round((w * source.height) / source.width))
     );
     const id = requestAnimationFrame(() => {
-      setPattern(generatePattern(downsample(source, w, h), { dither }));
+      setPattern(generatePattern(downsample(source, w, h), { dither, brand }));
     });
     return () => cancelAnimationFrame(id);
-  }, [source, beadsAcross, dither]);
+  }, [source, beadsAcross, dither, brand]);
 
   // Paint the visible canvas.
   useEffect(() => {
@@ -248,6 +256,32 @@ export default function PerlerStudio() {
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-2">
+              <Label>Bead brand</Label>
+              <Select
+                value={brand}
+                onValueChange={(v) => {
+                  setBrand(v as BrandId);
+                  setHighlight(null);
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(
+                    Object.entries(BRANDS) as [
+                      BrandId,
+                      (typeof BRANDS)[BrandId],
+                    ][]
+                  ).map(([id, b]) => (
+                    <SelectItem key={id} value={id}>
+                      {b.label} · {b.colors.length} colors
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <div className="flex justify-between">
                 <Label htmlFor="beads">Width in beads</Label>
                 <span className="text-sm tabular-nums text-muted-foreground">
@@ -356,7 +390,7 @@ export default function PerlerStudio() {
             <CardContent>
               <div className="flex flex-wrap gap-2">
                 {pattern.used.map((u) => {
-                  const c = PERLER_COLORS[u.index]!;
+                  const c = BRANDS[pattern.brand].colors[u.index]!;
                   const active = highlight === u.index;
                   return (
                     <button

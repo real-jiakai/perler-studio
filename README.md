@@ -7,7 +7,8 @@ Turn any image into a **Perler (fuse) bead pattern** — entirely in your browse
 ## ✨ Features
 
 - 🖼️ **Upload or drag & drop** any image (a built-in sample is included)
-- 🎯 **Perceptually accurate colors** — every pixel is matched against the complete current Perler catalog (103 colors with official product codes and community-measured RGB) using CIEDE2000 distance in CIE-Lab space
+- 🎯 **Perceptually accurate colors** — every pixel is matched using CIEDE2000 distance in CIE-Lab space
+- 🏷️ **Two bead brands** — the complete current Perler catalog (103 colors, official product codes) or the complete MARD 221 chart (series A–M), switchable per pattern
 - 🧮 **Floyd–Steinberg dithering** (toggleable) for smoother photo gradients
 - 📏 **Pegboard-aware grid** — guides every 10 pegs plus 29×29 board boundaries, so you know exactly how many standard pegboards you need
 - 🛒 **Bead shopping list** — per-color counts, sorted by quantity; click a color to highlight where it goes on the board
@@ -52,4 +53,4 @@ Static output — deploys to any static host (Cloudflare Pages, Netlify, Vercel�
 
 ## 📝 Notes
 
-Perler® is a trademark of its respective owner. This is an unofficial fan-made tool. Bead color values come from the community-maintained [beadcolors](https://github.com/maxcleme/beadcolors) dataset — measured approximations of the physical beads. Refresh the palette anytime with `node scripts/gen-palette.mjs`.
+Perler® and MARD are trademarks of their respective owners. This is an unofficial fan-made tool. Perler color values come from the community-maintained [beadcolors](https://github.com/maxcleme/beadcolors) dataset; the MARD 221 chart comes from [bitbead.app](https://www.bitbead.app/en/colors/mard). Both are measured approximations of the physical beads. Refresh the palettes anytime with `node scripts/gen-palette.mjs`.
