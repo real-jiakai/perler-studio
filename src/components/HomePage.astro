@@ -1,0 +1,58 @@
+---
+import "../styles/global.css";
+import PerlerStudio from "./PerlerStudio";
+import { ui, type Locale } from "../i18n/ui";
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = ui[locale];
+---
+
+<html lang={locale === "zh" ? "zh-CN" : "en"}>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={t.metaDesc} />
+		<title>{t.title}</title>
+	</head>
+	<body class="min-h-screen bg-neutral-50 text-foreground antialiased">
+		<header class="border-b bg-white">
+			<div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-4">
+				<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+					<circle cx="8" cy="8" r="6" fill="#C62A34" />
+					<circle cx="8" cy="8" r="2.2" fill="#872028" />
+					<circle cx="20" cy="8" r="6" fill="#2554A7" />
+					<circle cx="20" cy="8" r="2.2" fill="#193971" />
+					<circle cx="8" cy="20" r="6" fill="#F5DF00" />
+					<circle cx="8" cy="20" r="2.2" fill="#A79800" />
+					<circle cx="20" cy="20" r="6" fill="#108551" />
+					<circle cx="20" cy="20" r="2.2" fill="#0B5A37" />
+				</svg>
+				<div class="flex-1">
+					<h1 class="text-lg font-semibold leading-tight">Perler Studio</h1>
+					<p class="text-sm text-muted-foreground">{t.subtitle}</p>
+				</div>
+				<a
+					href={t.switchHref}
+					hreflang={t.switchLang}
+					class="rounded-md border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+				>
+					{t.switchLabel}
+				</a>
+			</div>
+		</header>
+		<main class="mx-auto max-w-6xl px-4 py-6">
+			<PerlerStudio client:load locale={locale} />
+		</main>
+		<footer
+			class="mx-auto max-w-6xl px-4 pb-8 text-center text-xs text-muted-foreground"
+		>
+			{t.footer}
+		</footer>
+	</body>
+</html>

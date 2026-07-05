@@ -19,6 +19,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { ui, type Locale } from "@/i18n/ui";
 import { BRANDS, type BrandId } from "@/lib/palette";
 import { generatePattern, type Pattern } from "@/lib/pattern";
 import { renderExport, renderPattern } from "@/lib/render";
@@ -97,7 +98,12 @@ function makeSample(): Source {
   };
 }
 
-export default function PerlerStudio() {
+export default function PerlerStudio({
+  locale = "en",
+}: {
+  locale?: Locale;
+}) {
+  const t = ui[locale];
   const [source, setSource] = useState<Source | null>(null);
   const [brand, setBrand] = useState<BrandId>("perler");
   const [beadsAcross, setBeadsAcross] = useState(48);
@@ -182,10 +188,8 @@ export default function PerlerStudio() {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Image</CardTitle>
-            <CardDescription>
-              Upload a picture to turn into a bead pattern.
-            </CardDescription>
+            <CardTitle>{t.imageTitle}</CardTitle>
+            <CardDescription>{t.imageDesc}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div
@@ -219,9 +223,7 @@ export default function PerlerStudio() {
               ) : (
                 <>
                   <span className="text-2xl">🖼️</span>
-                  <span className="text-muted-foreground">
-                    Drop an image here or click to browse
-                  </span>
+                  <span className="text-muted-foreground">{t.dropHint}</span>
                 </>
               )}
             </div>
@@ -241,10 +243,10 @@ export default function PerlerStudio() {
                 className="flex-1"
                 onClick={() => fileRef.current?.click()}
               >
-                Choose image
+                {t.chooseImage}
               </Button>
               <Button variant="outline" onClick={() => setSource(makeSample())}>
-                Try sample
+                {t.trySample}
               </Button>
             </div>
           </CardContent>
@@ -252,11 +254,11 @@ export default function PerlerStudio() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Pattern settings</CardTitle>
+            <CardTitle>{t.settingsTitle}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="space-y-2">
-              <Label>Bead brand</Label>
+              <Label>{t.brand}</Label>
               <Select
                 value={brand}
                 onValueChange={(v) => {
@@ -275,7 +277,7 @@ export default function PerlerStudio() {
                     ][]
                   ).map(([id, b]) => (
                     <SelectItem key={id} value={id}>
-                      {b.label} · {b.colors.length} colors
+                      {t.brandOption(b.label, b.colors.length)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -283,7 +285,7 @@ export default function PerlerStudio() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <Label htmlFor="beads">Width in beads</Label>
+                <Label htmlFor="beads">{t.widthBeads}</Label>
                 <span className="text-sm tabular-nums text-muted-foreground">
                   {beadsAcross}
                 </span>
@@ -299,7 +301,7 @@ export default function PerlerStudio() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <Label htmlFor="zoom">Zoom</Label>
+                <Label htmlFor="zoom">{t.zoom}</Label>
                 <span className="text-sm tabular-nums text-muted-foreground">
                   {cell}px
                 </span>
@@ -315,7 +317,7 @@ export default function PerlerStudio() {
             </div>
             <Separator />
             <div className="flex items-center justify-between">
-              <Label htmlFor="dither">Dithering</Label>
+              <Label htmlFor="dither">{t.dithering}</Label>
               <Switch
                 id="dither"
                 checked={dither}
@@ -323,7 +325,7 @@ export default function PerlerStudio() {
               />
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="grid">Grid &amp; pegboard lines</Label>
+              <Label htmlFor="grid">{t.gridLines}</Label>
               <Switch id="grid" checked={grid} onCheckedChange={setGrid} />
             </div>
             <Separator />
@@ -332,7 +334,7 @@ export default function PerlerStudio() {
               disabled={!pattern}
               onClick={download}
             >
-              Download pattern PNG
+              {t.download}
             </Button>
           </CardContent>
         </Card>
@@ -343,24 +345,24 @@ export default function PerlerStudio() {
         <Card>
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <CardTitle>Bead pattern</CardTitle>
+              <CardTitle>{t.patternTitle}</CardTitle>
               {pattern && (
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary">
-                    {pattern.width} × {pattern.height} pegs
+                    {t.pegs(pattern.width, pattern.height)}
                   </Badge>
                   <Badge variant="secondary">
-                    {pattern.totalBeads.toLocaleString()} beads
+                    {t.beads(pattern.totalBeads.toLocaleString())}
                   </Badge>
                   <Badge variant="secondary">
-                    {pattern.used.length} colors
+                    {t.colorsUsed(pattern.used.length)}
                   </Badge>
+                  <Badge variant="secondary">{t.pegboards(boards)}</Badge>
                   <Badge variant="secondary">
-                    {boards} pegboard{boards === 1 ? "" : "s"} (29×29)
-                  </Badge>
-                  <Badge variant="secondary">
-                    ≈ {(pattern.width * 0.5).toFixed(1)} ×{" "}
-                    {(pattern.height * 0.5).toFixed(1)} cm
+                    {t.sizeCm(
+                      (pattern.width * 0.5).toFixed(1),
+                      (pattern.height * 0.5).toFixed(1)
+                    )}
                   </Badge>
                 </div>
               )}
@@ -373,7 +375,7 @@ export default function PerlerStudio() {
               </div>
             ) : (
               <div className="flex h-64 items-center justify-center text-muted-foreground">
-                Upload an image (or try the sample) to see your pattern.
+                {t.emptyState}
               </div>
             )}
           </CardContent>
@@ -382,10 +384,8 @@ export default function PerlerStudio() {
         {pattern && (
           <Card>
             <CardHeader>
-              <CardTitle>Bead shopping list</CardTitle>
-              <CardDescription>
-                Click a color to highlight where it goes on the board.
-              </CardDescription>
+              <CardTitle>{t.legendTitle}</CardTitle>
+              <CardDescription>{t.legendDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">

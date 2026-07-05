@@ -15,6 +15,21 @@ Turn any image into a **Perler (fuse) bead pattern** — entirely in your browse
 - 💾 **PNG export** — pattern plus printable color legend in one image
 - 📐 **Physical size estimate** for standard 5 mm midi beads
 - 🫥 Transparent pixels become empty pegs, so cut-out PNGs make clean shaped patterns
+- 🌐 **English & 中文** — `/` for English, `/zh/` for Chinese, switchable in the header
+
+## 🎨 The palettes
+
+### Perler (103 colors)
+
+[Perler](https://perler.com) is the classic American fuse-bead brand — 5 mm "midi" beads that you arrange on a pegboard and fuse with an iron. The app ships the **complete current catalog: 103 colors**, each with its official product code (e.g. `80-15211 Tomato`) and RGB values measured from physical beads by the [beadcolors](https://github.com/maxcleme/beadcolors) community project.
+
+### MARD 221 (221 colors)
+
+MARD (米魔/漫德) is a popular Chinese fuse-bead brand whose color system is organized as lettered series — **221 colors across series A–M** (A×26, B×32, C×29, D×26, E×24, F×25, G×21, H×23, M×15). MARD colors are identified by code only (`A1`, `F15`, …) rather than names. The chart comes from [bitbead.app](https://www.bitbead.app/en/colors/mard). The much larger palette gives noticeably smoother gradients on photos.
+
+### Other color systems
+
+Plenty of other bead-color systems exist and could be added the same way: **Hama** (Danish, 92 midi colors), **Artkal** (A/C/M 2.6 mm mini and R/S 5 mm midi series, up to ~199 colors), **Nabbi** (30), **COCO 291** (Chinese mini-bead system), **Yant** (119), and MARD's own 291-color mini line. Adding one is a small change to `scripts/gen-palette.mjs` plus a new entry in the `BRANDS` map — PRs welcome.
 
 ## 🧱 Tech stack
 
